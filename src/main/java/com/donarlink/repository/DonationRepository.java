@@ -1,4 +1,11 @@
 package com.donarlink.repository;
 
-public class DonationRepository {
+import com.donarlink.model.Donation;
+import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
+
+public interface DonationRepository extends CrudRepository<Donation, Integer> {
+
+    List<Donation> getDonationsByDonor_Id(int donorId);
 }

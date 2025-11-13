@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donar Link - Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eff5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M30 10 L40 25 L30 40 L20 25 Z" fill="rgba(74,124,89,0.02)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 35px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .header-text h1 {
+            color: #2d5016;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .header-text p {
+            color: #5a7a4a;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0ebe4;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .card-header h2 {
+            color: #2d5016;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+
+        .donation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .donation-ngo {
+            color: #2d5016;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .donation-amount {
+            color: #4a7c59;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .donation-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #5a7a4a;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+
+        .ngo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+
+        .ngo-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .ngo-name {
+            color: #2d5016;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .ngo-description {
+            color: #5a7a4a;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .donate-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(45, 80, 22, 0.3);
+        }
+
+        .donations-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .donations-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .donations-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .donations-list::-webkit-scrollbar-thumb {
+            background: #4a7c59;
+            border-radius: 10px;
+        }
+
+        .donations-list::-webkit-scrollbar-thumb:hover {
+            background: #2d5016;
+        }
+
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .ngo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
+            <div class="header-text">
+                <h1>Donor Dashboard</h1>
+                <p>Welcome back, <span id="userName">John Doe</span></p>
+            </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="content-grid">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z"/>
+                    </svg>
+                </div>
+                <h2>Monthly Donations</h2>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="donationChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 15H5V5h2v3h10V5h2v13z"/>
+                    </svg>
+                </div>
+                <h2>Recent Donations</h2>
+            </div>
+            <div class="donations-list" id="donationsList">
+                <!-- Donations will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+            </div>
+            <h2>Donate to NGOs</h2>
+        </div>
+        <div class="ngo-grid" id="ngoGrid">
+            <!-- NGOs will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sample donation data
+    const donations = [
+        { ngo: "Red Cross Society", amount: 5000, date: "2024-11-08", status: "delivered", month: "November" },
+        { ngo: "Teach For India", amount: 3000, date: "2024-11-05", status: "transit", month: "November" },
+        { ngo: "Akshaya Patra Foundation", amount: 7500, date: "2024-10-28", status: "delivered", month: "October" },
+        { ngo: "CRY - Child Rights", amount: 2500, date: "2024-10-15", status: "delivered", month: "October" },
+        { ngo: "Smile Foundation", amount: 4000, date: "2024-09-22", status: "delivered", month: "September" },
+        { ngo: "Goonj", amount: 3500, date: "2024-09-10", status: "delivered", month: "September" },
+        { ngo: "HelpAge India", amount: 6000, date: "2024-08-25", status: "delivered", month: "August" }
+    ];
+
+    // Sample NGO data
+    const ngos = [
+        { name: "Red Cross Society", description: "Providing humanitarian aid and emergency assistance worldwide.", logo: "RC" },
+        { name: "Teach For India", description: "Eliminating educational inequity by enlisting exceptional leaders.", logo: "TF" },
+        { name: "Akshaya Patra", description: "Fighting hunger and malnutrition through mid-day meal program.", logo: "AP" },
+        { name: "CRY - Child Rights", description: "Ensuring happier childhoods for underprivileged children.", logo: "CR" },
+        { name: "Smile Foundation", description: "Empowering underprivileged children through education.", logo: "SF" },
+        { name: "Goonj", description: "Disaster relief and humanitarian aid across India.", logo: "GO" },
+        { name: "HelpAge India", description: "Working for the cause and care of disadvantaged elderly.", logo: "HA" },
+        { name: "Pratham", description: "Improving quality of education for underprivileged children.", logo: "PR" }
+    ];
+
+    // Calculate month-wise donation totals
+    function calculateMonthlyData() {
+        const monthlyTotals = {};
+        donations.forEach(donation => {
+            if (monthlyTotals[donation.month]) {
+                monthlyTotals[donation.month] += donation.amount;
+            } else {
+                monthlyTotals[donation.month] = donation.amount;
+            }
+        });
+        return monthlyTotals;
+    }
+
+    // Initialize pie chart
+    function initChart() {
+        const monthlyData = calculateMonthlyData();
+        const ctx = document.getElementById('donationChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(monthlyData),
+                datasets: [{
+                    data: Object.values(monthlyData),
+                    backgroundColor: [
+                        '#4a7c59',
+                        '#667eea',
+                        '#f093fb',
+                        '#4facfe',
+                        '#43e97b',
+                        '#fa8bff'
+                    ],
+                    borderWidth: 3,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13,
+                                weight: '600'
+                            },
+                            color: '#2d5016'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ₹' + context.parsed.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Load donations list
+    function loadDonations() {
+        const donationsList = document.getElementById('donationsList');
+        donationsList.innerHTML = '';
+
+        donations.forEach(donation => {
+            const statusClass = `status-${donation.status}`;
+            const statusText = donation.status.charAt(0).toUpperCase() + donation.status.slice(1);
+
+            const donationItem = document.createElement('div');
+            donationItem.className = 'donation-item';
+            donationItem.innerHTML = `
+                    <div class="donation-header">
+                        <div class="donation-ngo">${donation.ngo}</div>
+                        <div class="donation-amount">₹${donation.amount.toLocaleString()}</div>
+                    </div>
+                    <div class="donation-details">
+                        <span>${donation.date}</span>
+                        <span class="status-badge ${donation.status}">${donation.status}</span>
+                    </div>
+                `;
+            donationsList.appendChild(donationItem);
+        });
+    }
+
+    // Load NGOs
+    function loadNGOs() {
+        const ngoGrid = document.getElementById('ngoGrid');
+        ngoGrid.innerHTML = '';
+
+        ngos.forEach(ngo => {
+            const ngoCard = document.createElement('div');
+            ngoCard.className = 'ngo-card';
+            ngoCard.innerHTML = `
+                   <!-- <div class="ngo-logo">${ngo.logo}</div> -->
+                    <div class="ngo-name">${ngo.name}</div>
+                    <div class="ngo-description">${ngo.description}</div>
+                    <button class="donate-btn" onclick="donateToNGO('${ngo.name}')">Donate Now</button>
+                `;
+            ngoGrid.appendChild(ngoCard);
+        });
+    }
+
+    // Donate to NGO function
+    function donateToNGO(ngoName) {
+        alert(`Redirecting to donation page for ${ngoName}...`);
+        // In your Spring Boot app, this would redirect to the donation form
+        // window.location.href = '/donate?ngo=' + encodeURIComponent(ngoName);
+    }
+
+    // Logout function
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            window.location.href = '/login';
+        }
+    }
+
+    // Initialize dashboard
+    window.onload = function() {
+        initChart();
+        loadDonations();
+        loadNGOs();
+    };
+</script>
+</body>
+</html>
