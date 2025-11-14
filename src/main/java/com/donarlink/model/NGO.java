@@ -114,8 +114,7 @@ public class NGO {
     public NGO() {
     }
 
-    public NGO(int id, String legalName, String registrationNumber, String operationalStatement, String visionStatement, String ngoAddress, String emailAddress, LocalDate establishmentDate) {
-        this.id = id;
+    public NGO( String legalName, String registrationNumber, String operationalStatement, String visionStatement, String ngoAddress, String emailAddress,LocalDate establishmentDate) {
         this.legalName = legalName;
         this.registrationNumber = registrationNumber;
         this.operationalStatement = operationalStatement;

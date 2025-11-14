@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface NGORepository extends CrudRepository<NGO, Integer> {
 
-    List<NGO> getDistinctByLegalNameWithinIgnoreCase(String legalName);
+
 }

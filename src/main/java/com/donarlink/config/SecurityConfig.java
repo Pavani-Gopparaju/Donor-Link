@@ -26,6 +26,20 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        // Allow access to these specific URLs for everyone
+                        .requestMatchers(
+                                "/",                // Home page
+                                "/login",           // Your custom login page
+                                "/register",        // A registration page (if you have one)
+                                "/css/**",          // Static resources
+                                "/js/**",
+                                "/images/**",
+                                "/dashboard",
+                                "/signup"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .formLogin(form -> form
                         .loginPage("/login")
                         .usernameParameter("email")
