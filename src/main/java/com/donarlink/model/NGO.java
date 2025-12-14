@@ -39,7 +39,7 @@ public class NGO {
 //    @OneToMany
 //    private List<Task> taskList;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn
     private User admin;
 

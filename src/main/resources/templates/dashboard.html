@@ -363,7 +363,30 @@
             <h2>Donate to NGOs</h2>
         </div>
         <div class="ngo-grid" id="ngoGrid">
-            <!-- NGOs will be loaded here -->
+            <div th:if="${ngos.isEmpty()}" style="grid-column: 1/-1; text-align: center; padding: 20px; color: #5a7a4a;">
+                <p>No NGOs registered yet.</p>
+            </div>
+
+            <div th:each="ngo : ${ngos}" class="ngo-card" style="border: 1px solid #e0ebe4; padding: 20px; border-radius: 12px; background: white;">
+
+                <div class="ngo-logo" th:text="${ngo.legalName != null && ngo.legalName.length() >= 2 ? #strings.substring(ngo.legalName, 0, 2).toUpperCase() : 'NG'}">
+                    AB
+                </div>
+
+                <div class="ngo-name" th:text="${ngo.legalName}">
+                    NGO Name
+                </div>
+
+                <div class="ngo-description" th:text="${ngo.visionStatement}">
+                    Description goes here...
+                </div>
+
+                <button class="donate-btn"
+                        th:data-name="${ngo.legalName}"
+                        onclick="donateToNGO(this.getAttribute('data-name'))">
+                    Donate Now
+                </button>
+            </div>
         </div>
     </div>
 </div>

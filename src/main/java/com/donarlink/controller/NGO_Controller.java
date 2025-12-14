@@ -6,6 +6,7 @@ import com.donarlink.repository.NGORepository;
 import com.donarlink.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,7 +30,14 @@ public class NGO_Controller {
 
     @PostMapping("/register_ngo")
     public String RegisterNGO(@ModelAttribute("user") User user, @ModelAttribute("ngo") NGO ngo, Model model, Principal principal) {
-       ngo.setAdmin(user);
+        String email = principal.getName();
+
+        // 2. Find the full User object from the database
+        User currentUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // 3. Associate the User with the NGO
+        ngo.setAdmin(currentUser);
 
         ngoRepository.save(ngo);
         return "NGO_Registration";
