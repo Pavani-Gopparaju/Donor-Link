@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -316,7 +317,7 @@
             </div>
             <div class="header-text">
                 <h1>Donor Dashboard</h1>
-                <p>Welcome back, <span id="userName">John Doe</span></p>
+                <p>Welcome back, <span id="userName" th:text="${username}"></span></p>
             </div>
         </div>
         <button class="logout-btn" onclick="logout()">Logout</button>
@@ -369,31 +370,32 @@
 
 <script>
     // Sample donation data
-    const donations = [
-        { ngo: "Red Cross Society", amount: 5000, date: "2024-11-08", status: "delivered", month: "November" },
-        { ngo: "Teach For India", amount: 3000, date: "2024-11-05", status: "transit", month: "November" },
-        { ngo: "Akshaya Patra Foundation", amount: 7500, date: "2024-10-28", status: "delivered", month: "October" },
-        { ngo: "CRY - Child Rights", amount: 2500, date: "2024-10-15", status: "delivered", month: "October" },
-        { ngo: "Smile Foundation", amount: 4000, date: "2024-09-22", status: "delivered", month: "September" },
-        { ngo: "Goonj", amount: 3500, date: "2024-09-10", status: "delivered", month: "September" },
-        { ngo: "HelpAge India", amount: 6000, date: "2024-08-25", status: "delivered", month: "August" }
-    ];
-
-    // Sample NGO data
-    const ngos = [
-        { name: "Red Cross Society", description: "Providing humanitarian aid and emergency assistance worldwide.", logo: "RC" },
-        { name: "Teach For India", description: "Eliminating educational inequity by enlisting exceptional leaders.", logo: "TF" },
-        { name: "Akshaya Patra", description: "Fighting hunger and malnutrition through mid-day meal program.", logo: "AP" },
-        { name: "CRY - Child Rights", description: "Ensuring happier childhoods for underprivileged children.", logo: "CR" },
-        { name: "Smile Foundation", description: "Empowering underprivileged children through education.", logo: "SF" },
-        { name: "Goonj", description: "Disaster relief and humanitarian aid across India.", logo: "GO" },
-        { name: "HelpAge India", description: "Working for the cause and care of disadvantaged elderly.", logo: "HA" },
-        { name: "Pratham", description: "Improving quality of education for underprivileged children.", logo: "PR" }
-    ];
+    // const donations = [
+    //     { ngo: "Red Cross Society", amount: 5000, date: "2024-11-08", status: "delivered", month: "November" },
+    //     { ngo: "Teach For India", amount: 3000, date: "2024-11-05", status: "transit", month: "November" },
+    //     { ngo: "Akshaya Patra Foundation", amount: 7500, date: "2024-10-28", status: "delivered", month: "October" },
+    //     { ngo: "CRY - Child Rights", amount: 2500, date: "2024-10-15", status: "delivered", month: "October" },
+    //     { ngo: "Smile Foundation", amount: 4000, date: "2024-09-22", status: "delivered", month: "September" },
+    //     { ngo: "Goonj", amount: 3500, date: "2024-09-10", status: "delivered", month: "September" },
+    //     { ngo: "HelpAge India", amount: 6000, date: "2024-08-25", status: "delivered", month: "August" }
+    // ];
+    //
+    // // Sample NGO data
+    // const ngos = [
+    //     { name: "Red Cross Society", description: "Providing humanitarian aid and emergency assistance worldwide.", logo: "RC" },
+    //     { name: "Teach For India", description: "Eliminating educational inequity by enlisting exceptional leaders.", logo: "TF" },
+    //     { name: "Akshaya Patra", description: "Fighting hunger and malnutrition through mid-day meal program.", logo: "AP" },
+    //     { name: "CRY - Child Rights", description: "Ensuring happier childhoods for underprivileged children.", logo: "CR" },
+    //     { name: "Smile Foundation", description: "Empowering underprivileged children through education.", logo: "SF" },
+    //     { name: "Goonj", description: "Disaster relief and humanitarian aid across India.", logo: "GO" },
+    //     { name: "HelpAge India", description: "Working for the cause and care of disadvantaged elderly.", logo: "HA" },
+    //     { name: "Pratham", description: "Improving quality of education for underprivileged children.", logo: "PR" }
+    // ];
 
     // Calculate month-wise donation totals
     function calculateMonthlyData() {
         const monthlyTotals = {};
+        const donations = $('#donationsList').find('.ngo-item');
         donations.forEach(donation => {
             if (monthlyTotals[donation.month]) {
                 monthlyTotals[donation.month] += donation.amount;
@@ -455,47 +457,47 @@
     }
 
     // Load donations list
-    function loadDonations() {
-        const donationsList = document.getElementById('donationsList');
-        donationsList.innerHTML = '';
-
-        donations.forEach(donation => {
-            const statusClass = `status-${donation.status}`;
-            const statusText = donation.status.charAt(0).toUpperCase() + donation.status.slice(1);
-
-            const donationItem = document.createElement('div');
-            donationItem.className = 'donation-item';
-            donationItem.innerHTML = `
-                    <div class="donation-header">
-                        <div class="donation-ngo">${donation.ngo}</div>
-                        <div class="donation-amount">₹${donation.amount.toLocaleString()}</div>
-                    </div>
-                    <div class="donation-details">
-                        <span>${donation.date}</span>
-                        <span class="status-badge ${donation.status}">${donation.status}</span>
-                    </div>
-                `;
-            donationsList.appendChild(donationItem);
-        });
-    }
-
-    // Load NGOs
-    function loadNGOs() {
-        const ngoGrid = document.getElementById('ngoGrid');
-        ngoGrid.innerHTML = '';
-
-        ngos.forEach(ngo => {
-            const ngoCard = document.createElement('div');
-            ngoCard.className = 'ngo-card';
-            ngoCard.innerHTML = `
-                   <!-- <div class="ngo-logo">${ngo.logo}</div> -->
-                    <div class="ngo-name">${ngo.name}</div>
-                    <div class="ngo-description">${ngo.description}</div>
-                    <button class="donate-btn" onclick="donateToNGO('${ngo.name}')">Donate Now</button>
-                `;
-            ngoGrid.appendChild(ngoCard);
-        });
-    }
+    // function loadDonations() {
+    //     const donationsList = document.getElementById('donationsList');
+    //     donationsList.innerHTML = '';
+    //
+    //     donations.forEach(donation => {
+    //         const statusClass = `status-${donation.status}`;
+    //         const statusText = donation.status.charAt(0).toUpperCase() + donation.status.slice(1);
+    //
+    //         const donationItem = document.createElement('div');
+    //         donationItem.className = 'donation-item';
+    //         donationItem.innerHTML = `
+    //                 <div class="donation-header">
+    //                     <div class="donation-ngo">${donation.ngo}</div>
+    //                     <div class="donation-amount">₹${donation.amount.toLocaleString()}</div>
+    //                 </div>
+    //                 <div class="donation-details">
+    //                     <span>${donation.date}</span>
+    //                     <span class="status-badge ${donation.status}">${donation.status}</span>
+    //                 </div>
+    //             `;
+    //         donationsList.appendChild(donationItem);
+    //     });
+    // }
+    //
+    // // Load NGOs
+    // function loadNGOs() {
+    //     const ngoGrid = document.getElementById('ngoGrid');
+    //     ngoGrid.innerHTML = '';
+    //
+    //     ngos.forEach(ngo => {
+    //         const ngoCard = document.createElement('div');
+    //         ngoCard.className = 'ngo-card';
+    //         ngoCard.innerHTML = `
+    //                <!-- <div class="ngo-logo">${ngo.logo}</div> -->
+    //                 <div class="ngo-name">${ngo.name}</div>
+    //                 <div class="ngo-description">${ngo.description}</div>
+    //                 <button class="donate-btn" onclick="donateToNGO('${ngo.name}')">Donate Now</button>
+    //             `;
+    //         ngoGrid.appendChild(ngoCard);
+    //     });
+    // }
 
     // Donate to NGO function
     function donateToNGO(ngoName) {
