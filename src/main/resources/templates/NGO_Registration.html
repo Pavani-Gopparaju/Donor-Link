@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donar Link - NGO Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eff5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M30 10 L40 25 L30 40 L20 25 Z" fill="rgba(74,124,89,0.02)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 38px;
+            height: 38px;
+            fill: white;
+        }
+
+        .header h1 {
+            color: #2d5016;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #5a7a4a;
+            font-size: 15px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.6s ease-in 0.2s backwards;
+        }
+
+        .form-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            color: #2d5016;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0ebe4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2d5016;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 3px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0ebe4;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4a7c59;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(74, 124, 89, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #a0b0a0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 12px;
+            color: #5a7a4a;
+            margin-top: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #4a7c59;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #2d5016;
+        }
+
+        .back-link svg {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 640px) {
+            .form-card {
+                padding: 25px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </div>
+        <h1>NGO Registration</h1>
+        <p>Join our platform to connect with donors and make a difference</p>
+    </div>
+
+    <div class="form-card">
+        <form id="ngoForm" action="/register_ngo"  th:object="${ngo}" method="POST">
+
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 15H5V5h2v3h10V5h2v13z"/>
+                        </svg>
+                    </div>
+                    Basic Information
+                </div>
+
+                <div class="form-group">
+                    <label for="legalName">Legal Name of NGO<span class="required">*</span></label>
+                    <input type="text" id="legalName" th:field = "*{legalName}" name="legalName" placeholder="Enter the official registered name" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="registrationNumber">Registration Number<span class="required">*</span></label>
+                        <input type="text" id="registrationNumber" th:field = "*{registrationNumber}" name="registrationNumber" placeholder="e.g., 12A, 80G, FCRA" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="establishmentDate">Establishment Date<span class="required">*</span></label>
+                        <input type="date" id="establishmentDate" th:field = "*{establishmentDate}" name="establishmentDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailAddress">Email Address<span class="required">*</span></label>
+                    <input type="email" id="emailAddress" th:field = "*{emailAddress}" name="emailAddress" placeholder="contact@ngo.org" required>
+                </div>
+            </div>
+
+            <!-- Mission & Vision -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </div>
+                    Mission & Vision
+                </div>
+
+                <div class="form-group">
+                    <label for="visionStatement">Vision Statement<span class="required">*</span></label>
+                    <textarea id="visionStatement" th:field = "*{visionStatement}" name="visionStatement" placeholder="Describe your organization's long-term vision and aspirations..." maxlength="500" required></textarea>
+                    <div class="char-count"><span id="visionCount">0</span>/500 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="operationalStatement">Operational Statement<span class="required">*</span></label>
+                    <textarea id="operationalStatement" th:field = "*{operationalStatement}" name="operationalStatement" placeholder="Describe your organization's mission, activities, and areas of focus..." maxlength="1000" required></textarea>
+                    <div class="char-count"><span id="operationCount">0</span>/1000 characters</div>
+                </div>
+            </div>
+
+            <!-- Location -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                    </div>
+                    Location Details
+                </div>
+
+                <div class="form-group">
+                    <label for="ngoAddress">Complete Address<span class="required">*</span></label>
+                    <textarea id="ngoAddress" th:field = "*{ngoAddress}" name="ngoAddress" placeholder="Enter street address, city, state, postal code, and country..." maxlength="500" required></textarea>
+                    <div class="char-count"><span id="addressCount">0</span>/500 characters</div>
+                </div>
+            </div>
+            <button type="button" class="submit-btn" id="saveDraftBtn"
+                    style="background: linear-gradient(135deg, #6c8c7c 0%, #4a7c59 100%); margin-bottom: 10px;">
+                Save Draft
+            </button>
+            <button type="submit" class="submit-btn">Register NGO</button>
+        </form>
+
+        <a href="/dashboard" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<script>
+
+        /* ------------------ DOM refs ------------------ */
+        const form = document.getElementById("ngoForm");
+
+        const legalName = document.getElementById("legalName");
+        const registrationNumber = document.getElementById("registrationNumber");
+        const establishmentDate = document.getElementById("establishmentDate");
+        const emailAddress = document.getElementById("emailAddress");
+        const visionStatement = document.getElementById("visionStatement");
+        const operationalStatement = document.getElementById("operationalStatement");
+        const ngoAddress = document.getElementById("ngoAddress");
+
+        const visionCount = document.getElementById("visionCount");
+        const operationCount = document.getElementById("operationCount");
+        const addressCount = document.getElementById("addressCount");
+
+        /* ------------------ Counters ------------------ */
+        visionStatement.addEventListener("input", () => visionCount.textContent = visionStatement.value.length);
+        operationalStatement.addEventListener("input", () => operationCount.textContent = operationalStatement.value.length);
+        ngoAddress.addEventListener("input", () => addressCount.textContent = ngoAddress.value.length);
+
+        /* ------------------ Draft storage ------------------ */
+        const STORAGE_KEY = "ngo_registration_draft";
+        const DRAFT_TTL_HOURS = 24;
+
+        function saveDraft(data) {
+        const payload = {
+        data,
+        expiresAt: Date.now() + DRAFT_TTL_HOURS * 60 * 60 * 1000
+    };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    }
+
+        function loadDraft() {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+
+        try {
+        const payload = JSON.parse(raw);
+        if (Date.now() > payload.expiresAt) {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+    }
+        return payload.data;
+    } catch {
+        localStorage.removeItem(STORAGE_KEY);
+        return null;
+    }
+    }
+
+        function clearDraft() {
+        localStorage.removeItem(STORAGE_KEY);
+    }
+
+        /* ------------------ Restore draft ------------------ */
+        window.addEventListener("DOMContentLoaded", () => {
+        const draft = loadDraft();
+        if (!draft) return;
+
+        legalName.value = draft.legalName || "";
+        registrationNumber.value = draft.registrationNumber || "";
+        establishmentDate.value = draft.establishmentDate || "";
+        emailAddress.value = draft.emailAddress || "";
+        visionStatement.value = draft.visionStatement || "";
+        operationalStatement.value = draft.operationalStatement || "";
+        ngoAddress.value = draft.ngoAddress || "";
+
+        visionCount.textContent = visionStatement.value.length;
+        operationCount.textContent = operationalStatement.value.length;
+        addressCount.textContent = ngoAddress.value.length;
+
+        console.log("Draft restored");
+    });
+
+        /* ------------------ Save draft button ------------------ */
+        document.getElementById("saveDraftBtn").addEventListener("click", () => {
+        saveDraft(collectFormData());
+        alert("Draft saved locally");
+    });
+
+        /* ------------------ Autosave (debounced) ------------------ */
+        let autosaveTimer;
+        form.addEventListener("input", () => {
+        clearTimeout(autosaveTimer);
+        autosaveTimer = setTimeout(() => {
+        saveDraft(collectFormData());
+    }, 800);
+    });
+
+        function collectFormData() {
+        return {
+        legalName: legalName.value,
+        registrationNumber: registrationNumber.value,
+        establishmentDate: establishmentDate.value,
+        emailAddress: emailAddress.value,
+        visionStatement: visionStatement.value,
+        operationalStatement: operationalStatement.value,
+        ngoAddress: ngoAddress.value
+    };
+    }
+
+        /* ------------------ Submit handler ------------------ */
+        form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let isValid = true;
+        form.querySelectorAll("[required]").forEach(field => {
+        field.style.borderColor = field.value.trim() ? "#e0ebe4" : "#e74c3c";
+        if (!field.value.trim()) isValid = false;
+    });
+
+        if (!isValid) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+        clearDraft(); // 🔥 important
+        this.submit(); // real submit
+    });
+
+        /* ------------------ Date guard ------------------ */
+        establishmentDate.max = new Date().toISOString().split("T")[0];
+</script>
+
+
+</body>
+</html>

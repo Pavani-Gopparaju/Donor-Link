@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class NGO {
@@ -34,6 +35,9 @@ public class NGO {
 
     @Column
     private LocalDate establishmentDate;
+
+//    @OneToMany
+//    private List<Task> taskList;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn

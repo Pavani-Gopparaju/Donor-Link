@@ -203,7 +203,7 @@
             <p>Donar Link - A Donation Tracker</p>
         </div>
     </div>
-    <form id="loginForm" action="/dashboard" method="POST">
+    <form id="loginForm" th:action="@{/login}" method="POST">
         <div class="form-group">
             <label for="email">email</label>
             <div class="input-wrapper">
@@ -225,7 +225,7 @@
         <button type="submit" class="submit-btn">Sign In</button>
     </form>
     <div class="footer-links">
-        <a href="#">Forgot your password?</a>
+        <a>Forgot your password?</a>
         <a href="/signup" class="signup-btn">Sign up</a>
     </div>
     <div class="tagline">
