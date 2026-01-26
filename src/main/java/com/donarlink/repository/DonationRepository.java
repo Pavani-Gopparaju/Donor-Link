@@ -8,4 +8,6 @@ import java.util.List;
 public interface DonationRepository extends CrudRepository<Donation, Integer> {
 
     List<Donation> getDonationsByDonor_Id(int donorId);
+
+    List<Donation> getDonationsByNgo_Id(int ngoId);
 }

@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donar Link - NGO Details</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eff5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M30 10 L40 25 L30 40 L20 25 Z" fill="rgba(74,124,89,0.02)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 35px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-icon {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .header-text h1 {
+            color: #2d5016;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .header-text p {
+            color: #5a7a4a;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.6s ease-in;
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0ebe4;
+        }
+
+        .card-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+
+        .card-header h2 {
+            color: #2d5016;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .create-task-btn {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .create-task-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(45, 80, 22, 0.3);
+        }
+
+        .ngo-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .detail-label {
+            color: #5a7a4a;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: #2d5016;
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .detail-value.large {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .statement-section {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #e0ebe4;
+        }
+
+        .statement-title {
+            color: #2d5016;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .statement-text {
+            color: #5a7a4a;
+            font-size: 14px;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .task-card {
+            background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
+            border: 2px solid #e0ebe4;
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #4a7c59;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .task-title {
+            color: #2d5016;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .task-priority {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .priority-high {
+            background: linear-gradient(135deg, #fee 0%, #fcc 100%);
+            color: #c0392b;
+            border: 2px solid #e74c3c;
+        }
+
+        .priority-medium {
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe6cc 100%);
+            color: #d68910;
+            border: 2px solid #f39c12;
+        }
+
+        .priority-low {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: #1976d2;
+            border: 2px solid #2196f3;
+        }
+
+        .task-description {
+            color: #5a7a4a;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .task-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e0ebe4;
+            margin-bottom: 15px;
+        }
+
+        .funding-section {
+            grid-column: 1 / -1;
+            margin-top: 5px;
+        }
+
+        .funding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .funding-label {
+            color: #5a7a4a;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .funding-amounts {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .amount-raised {
+            color: #2d5016;
+            font-weight: 700;
+        }
+
+        .amount-total {
+            color: #5a7a4a;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #e0ebe4;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 20px;
+            transition: all 0.5s ease;
+            position: relative;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .progress-red {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .progress-yellow {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .progress-light-green {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .progress-green {
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+        }
+
+        .progress-percentage {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .donate-task-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #4a7c59 0%, #2d5016 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .donate-task-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(45, 80, 22, 0.4);
+        }
+
+        .donate-task-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .donate-task-btn:disabled {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .donate-task-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .fully-funded-badge {
+            flex: 1;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .fully-funded-badge svg {
+            width: 16px;
+            height: 16px;
+            fill: white;
+        }
+
+        .view-details-btn {
+            padding: 12px 20px;
+            background: white;
+            color: #4a7c59;
+            border: 2px solid #4a7c59;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .view-details-btn:hover {
+            background: #f5f7fa;
+            border-color: #2d5016;
+            color: #2d5016;
+        }
+
+        .task-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            color: #5a7a4a;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            color: #2d5016;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .task-status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .status-todo {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+            color: #b8860b;
+            border: 2px solid #daa520;
+        }
+
+        .status-in_progress {
+            background: linear-gradient(135deg, #e6f7ff 0%, #cce7ff 100%);
+            color: #0066cc;
+            border: 2px solid #3399ff;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #5a7a4a;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            fill: #c8d4cc;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #2d5016;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            font-size: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 968px) {
+            .ngo-details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tasks-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path
+                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>
+                </div>
+                <div class="header-text">
+                    <h1>NGO Details</h1>
+                    <p>View organization information and tasks</p>
+                </div>
+            </div>
+            <a href="/dashboard" class="back-btn">Back to Dashboard</a>
+        </div>
+
+        <!-- NGO Information Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                    </div>
+                    <h2>Organization Information</h2>
+                </div>
+            </div>
+
+            <div class="ngo-details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Legal Name</div>
+                    <div class="detail-value large" id="legalName" th:text="${ngo.legalName}">Save the Children India
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Registration Number</div>
+                    <div class="detail-value" id="registrationNumber" th:text="${ngo.registrationNumber}">12A-80G-2024
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Email Address</div>
+                    <div class="detail-value" id="emailAddress" th:text="${ngo.emailAddress}">contact@savechildren.org
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Established Date</div>
+                    <div class="detail-value" id="establishmentDate" th:text="${ngo.establishmentDate}">January 15, 2010
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-item statement-section">
+                <div class="detail-label">Address</div>
+                <div class="detail-value" id="ngoAddress" th:text="${ngo.ngoAddress}">123 Gandhi Road, Bangalore,
+                    Karnataka, India - 560001</div>
+            </div>
+
+            <div class="statement-section">
+                <div class="statement-title">Vision Statement</div>
+                <div class="statement-text" id="visionStatement" th:text="${ngo.visionStatement}">
+                    To create a world where every child has access to quality education, healthcare, and a safe
+                    environment to grow and thrive. We envision a future where no child is left behind and all children
+                    can reach their full potential.
+                </div>
+            </div>
+
+            <div class="statement-section">
+                <div class="statement-title">Operational Statement</div>
+                <div class="statement-text" id="operationalStatement" th:text="${ngo.operationalStatement}">
+                    We work across urban and rural communities to provide educational programs, healthcare services, and
+                    child protection initiatives. Our programs focus on underprivileged children, offering scholarships,
+                    vocational training, health camps, and emergency relief services. We collaborate with local
+                    governments, schools, and community organizations to ensure sustainable impact.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Card -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-left">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 15H5V5h2v3h10V5h2v13z" />
+                        </svg>
+                    </div>
+                    <h2>Tasks</h2>
+                </div>
+               
+            </div>
+
+            <div class="tasks-grid" id="tasksGrid">
+                <!-- Active Tasks -->
+                <div th:each="task : ${activeTasks}" class="task-card">
+                    <div class="task-header">
+                        <div style="flex: 1;">
+                            <div class="task-title" th:text="${task.title}">Task Title</div>
+                        </div>
+                        <div th:class="${'task-priority priority-' + #strings.toLowerCase(task.priority)}"
+                            th:text="${task.priority}">HIGH</div>
+                    </div>
+                    <div class="task-description" th:text="${task.description}">Description</div>
+                    <div class="task-meta">
+                        <div class="task-meta-item">
+                            <div class="meta-label">Deadline</div>
+                            <div class="meta-value" th:text="${task.deadline}">2024-12-25</div>
+                        </div>
+                        <div class="task-meta-item">
+                            <div class="meta-label">Status</div>
+                            <div th:class="${'task-status status-' + #strings.toLowerCase(task.status)}"
+                                th:text="${#strings.replace(task.status, '_', ' ')}">TODO</div>
+                        </div>
+                        <div class="funding-section">
+                            <div class="funding-header">
+                                <div class="funding-label">Funding Progress</div>
+                                <div class="funding-amounts">
+                                    <span class="amount-raised" th:text="${'₹' + task.amountRaised}">₹8,000</span>
+                                    <span class="amount-total" th:text="${'/ ₹' + task.estimated_cost}">/ ₹50,000</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div th:class="${'progress-bar ' + (task.estimated_cost > 0 ? (task.amountRaised / task.estimated_cost < 0.2 ? 'progress-red' : (task.amountRaised / task.estimated_cost < 0.5 ? 'progress-yellow' : (task.amountRaised / task.estimated_cost < 0.8 ? 'progress-light-green' : 'progress-green'))) : 'progress-red')}"
+                                    th:style="'width:' + (${task.estimated_cost > 0 ? (task.amountRaised / task.estimated_cost * 100) : 0}) + '%'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <a th:href="@{/donate/task/{id}(id=${task.id})}" class="donate-task-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                            Donate
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Fully Funded Tasks -->
+                <div th:each="task : ${fullyFundedTasks}" class="task-card">
+                    <div class="task-header">
+                        <div style="flex: 1;">
+                            <div class="task-title" th:text="${task.title}">Task Title</div>
+                        </div>
+                        <div th:class="${'task-priority priority-' + #strings.toLowerCase(task.priority)}"
+                            th:text="${task.priority}">HIGH</div>
+                    </div>
+                    <div class="task-description" th:text="${task.description}">Description</div>
+                    <div class="task-meta">
+                        <div class="task-meta-item">
+                            <div class="meta-label">Deadline</div>
+                            <div class="meta-value" th:text="${task.deadline}">2024-12-25</div>
+                        </div>
+                        <div class="task-meta-item">
+                            <div class="meta-label">Status</div>
+                            <div th:class="${'task-status status-' + #strings.toLowerCase(task.status)}"
+                                th:text="${#strings.replace(task.status, '_', ' ')}">COMPLETED</div>
+                        </div>
+                        <div class="funding-section">
+                            <div class="funding-header">
+                                <div class="funding-label">Funding Progress</div>
+                                <div class="funding-amounts">
+                                    <span class="amount-raised" th:text="${'₹' + task.amountRaised}">₹50,000</span>
+                                    <span class="amount-total" th:text="${'/ ₹' + task.estimated_cost}">/ ₹50,000</span>
+                                </div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar progress-green" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <div class="fully-funded-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                            </svg>
+                            Fully Funded
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -2,9 +2,11 @@ package com.donarlink.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
+@Setter
 @Getter
 @Entity
 public class Ticket {
@@ -29,62 +31,6 @@ public class Ticket {
 
     @OneToOne
     private NGO ngo;
-
-    public int getTicket_id() {
-        return Ticket_id;
-    }
-
-    public void setTicket_id(int ticket_id) {
-        Ticket_id = ticket_id;
-    }
-
-    public String getTicket_Title() {
-        return Ticket_Title;
-    }
-
-    public void setTicket_Title(String ticket_Title) {
-        Ticket_Title = ticket_Title;
-    }
-
-    public String getTicket_Description() {
-        return Ticket_Description;
-    }
-
-    public void setTicket_Description(String ticket_Description) {
-        Ticket_Description = ticket_Description;
-    }
-
-    public Date getTicket_Date() {
-        return Ticket_Date;
-    }
-
-    public void setTicket_Date(Date ticket_Date) {
-        Ticket_Date = ticket_Date;
-    }
-
-    public String getTicket_Status() {
-        return Ticket_Status;
-    }
-
-    public void setTicket_Status(String ticket_Status) {
-        Ticket_Status = ticket_Status;
-    }
-
-    public User getTicket_User() {
-        return Ticket_User;
-    }
-
-    public void setTicket_User(User ticket_User) {
-        Ticket_User = ticket_User;
-    }
-
-    public NGO getNgo() {
-        return ngo;
-    }
-
-    public void setNgo(NGO ngo) {
-        this.ngo = ngo;
-    }
 
     public Ticket() {
 

@@ -14,51 +14,52 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(auth -> auth
+                                                // Allow access to these specific URLs for everyone
+                                                .requestMatchers(
+                                                                "/", // Home page
+                                                                "/login", // Your custom login page
+                                                                "/register", // A registration page (if you have one)
+                                                                "/css/**", // Static resources
+                                                                "/js/**",
+                                                                "/images/**",
+                                                                "/signup",
+                                                                "/createTask",
+                                                                "/createTask",
+                                                                "/CreateNGO")
+                                                .permitAll()
+                                                // .requestMatchers("/CreateNGO").hasAnyAuthority("ROLE_ADMIN",
+                                                // "ROLE_NGO")
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        // Allow access to these specific URLs for everyone
-                        .requestMatchers(
-                                "/",                // Home page
-                                "/login",           // Your custom login page
-                                "/register",        // A registration page (if you have one)
-                                "/css/**",          // Static resources
-                                "/js/**",
-                                "/images/**",
-                                "/signup"
-                        ).permitAll()
-//                        .requestMatchers("/CreateNGO").hasAnyAuthority("ROLE_ADMIN", "ROLE_NGO")
+                                                .anyRequest().authenticated())
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .usernameParameter("email")
+                                                .passwordParameter("password")
+                                                .defaultSuccessUrl("/dashboard", true)
+                                                .permitAll()
 
+                                )
+                                .rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer
+                                                .rememberMeParameter("remember-me")
+                                                .key("remember-me")
+                                                .tokenValiditySeconds(7 * 24 * 60 * 60))
+                                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer
+                                                .logoutUrl("/logout")
+                                                .deleteCookies("JSESSIONID", "remember-me")
+                                                .logoutSuccessUrl("/login?logout")
 
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .usernameParameter("email")
-                        .passwordParameter("password")
-                        .defaultSuccessUrl("/dashboard",true)
-                        .permitAll()
+                                );
 
-
-                )
-                .rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer.rememberMeParameter("remember-me")
-                        .key("remember-me")
-                        .tokenValiditySeconds(7*24*60*60)
-                )
-                .logout(httpSecurityLogoutConfigurer -> httpSecurityLogoutConfigurer.logoutUrl("/logout")
-                        .deleteCookies("JSESSIONID", "remember-me")
-                        
-                );
-
-
-        return http.build();
-    }
+                return http.build();
+        }
 }

@@ -21,7 +21,6 @@ import java.security.Principal;
 
 import java.util.List;
 
-
 @Controller
 public class LoginController {
 
@@ -34,8 +33,6 @@ public class LoginController {
     @Autowired
     private NGORepository ngoRepository;
 
-
-
     @GetMapping("/login")
     public String login() {
 
@@ -45,21 +42,30 @@ public class LoginController {
     @GetMapping("/signup")
     public String signup(Model model) {
         model.addAttribute("user", new User());
-
+        model.addAttribute("ngo", new NGO());
         return "Signup";
     }
 
     @PostMapping("/signup")
-    public String signup(@ModelAttribute("user") User user, RedirectAttributes redirectAttributes) { // Add RedirectAttributes
+    public String signup(@ModelAttribute("user") User user, @ModelAttribute("ngo") NGO ngo,
+            RedirectAttributes redirectAttributes) {
         try {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             String encodedPassword = encoder.encode(user.getPassword());
             user.setPassword(encodedPassword);
-            userRepository.save(user);
+
+            // 1. Save User first
+            User savedUser = userRepository.save(user);
+
+            // 2. If Role is NGO, save NGO details
+            if ("ROLE_NGO".equals(user.getRole())) {
+                ngo.setAdmin(savedUser);
+                ngoRepository.save(ngo);
+            }
 
             // Add a success message for the login page
             redirectAttributes.addFlashAttribute("success", "Registration successful! Please login.");
-            return "redirect:/login"; // Use redirect:
+            return "redirect:/login";
         } catch (Exception e) {
             // Add an error message
             redirectAttributes.addFlashAttribute("error", "Email or phone already in use.");
@@ -78,17 +84,46 @@ public class LoginController {
         // 2. Add user's name to the model
         model.addAttribute("username", user.getUsername());
 
-        // 3. Get data from repositories
-        List<Donation> donations = donationRepository.getDonationsByDonor_Id(user.getId());
-        List<NGO> ngos = (List<NGO>) ngoRepository.findAll(); // Get real NGOs from DB
+        // 3. Get data based on role
+        if ("ROLE_NGO".equals(user.getRole())) {
+            NGO ngo = ngoRepository.findByAdmin_Id(user.getId())
+                    .orElseThrow(() -> new RuntimeException("NGO profile not found for this user"));
 
-        // 4. Add data to the model
-        model.addAttribute("donations", donations);
-        model.addAttribute("ngos", ngos);
+            // Get donations received by this NGO
+            List<Donation> ngoDonations = donationRepository.getDonationsByNgo_Id(ngo.getId());
+
+            // Get tasks
+            java.util.List<com.donarlink.model.Task> activeTasks = new java.util.ArrayList<>();
+            java.util.List<com.donarlink.model.Task> fullyFundedTasks = new java.util.ArrayList<>();
+
+            if (ngo.getTasks() != null) {
+                for (com.donarlink.model.Task task : ngo.getTasks()) {
+                    if (task.getAmountRaised() >= task.getEstimated_cost()
+                            || task.getStatus() == com.donarlink.model.Task.TaskStatus.COMPLETED) {
+                        fullyFundedTasks.add(task);
+                    } else {
+                        activeTasks.add(task);
+                    }
+                }
+            }
+
+            model.addAttribute("ngo", ngo);
+            model.addAttribute("ngoDonations", ngoDonations);
+            model.addAttribute("activeTasks", activeTasks);
+            model.addAttribute("fullyFundedTasks", fullyFundedTasks);
+            model.addAttribute("isNGO", true);
+
+        } else {
+            // Default to Donor view
+            List<Donation> donations = donationRepository.getDonationsByDonor_Id(user.getId());
+            List<NGO> ngos = (List<NGO>) ngoRepository.findAll();
+
+            model.addAttribute("donations", donations);
+            model.addAttribute("ngos", ngos);
+            model.addAttribute("isNGO", false);
+        }
 
         return "dashboard";
     }
-
-
 
 }
